@@ -1,0 +1,13 @@
+adamw-step-dmc
+==============
+
+This is a demoniC reimplementation of a published algorithm.
+
+  Algorithm:  PyTorch torch.optim.AdamW
+  Reference:  https://arxiv.org/abs/1711.05101 (Loshchilov & Hutter, 2019)
+  Author(s):  the PyTorch authors
+
+Algorithms are not copyrightable; this port reimplements the math, not any
+specific source code, so it carries no upstream code license. It is released
+UNLICENSED. For the original work and any rights in it, defer to the original
+author. ¯\_(ツ)_/¯

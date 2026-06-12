@@ -1,0 +1,79 @@
+# adamw_step.dmc -- translation of adamw_step.py.
+#
+# Same fixed-size AdamW core: decoupled weight decay, moments, bias correction,
+# epsilon-stabilized update. State mutation lives in main() so the result is
+# faithful under demoniC's current tensor write-back semantics.
+
+fn grad(step: i64, i: i64) -> f64 {
+    if step == 1 {
+        match i {
+            0 => 0.10,
+            1 => -0.20,
+            2 => 0.05,
+            _ => 0.30,
+        }
+    } else if step == 2 {
+        match i {
+            0 => 0.07,
+            1 => -0.15,
+            2 => 0.02,
+            _ => 0.25,
+        }
+    } else {
+        match i {
+            0 => 0.04,
+            1 => -0.10,
+            2 => 0.01,
+            _ => 0.20,
+        }
+    }
+}
+
+fn print_vec(label: str, x: Tensor[f64, [4]]) -> nil {
+    print(label)
+    for i in 0..4 {
+        print(x[i])
+        if i < 3 { print(" ") }
+    }
+    print("\n")
+    nil
+}
+
+fn main() -> nil {
+    let lr = 0.05
+    let beta1 = 0.9
+    let beta2 = 0.999
+    let eps = 0.00000001
+    let weight_decay = 0.01
+
+    let !w = vault.zeros[f64, [4]]
+    w[0] = 0.50
+    w[1] = -1.00
+    w[2] = 2.00
+    w[3] = -0.25
+
+    let !m = vault.zeros[f64, [4]]
+    let !v = vault.zeros[f64, [4]]
+
+    for step in 1..4 {
+        let b1_corr = 1.0 - beta1 ** step
+        let b2_corr = 1.0 - beta2 ** step
+        for i in 0..4 {
+            let g = grad(step, i)
+            w[i] = w[i] - lr * weight_decay * w[i]
+            m[i] = beta1 * m[i] + (1.0 - beta1) * g
+            v[i] = beta2 * v[i] + (1.0 - beta2) * g * g
+            let m_hat = m[i] / b1_corr
+            let v_hat = v[i] / b2_corr
+            w[i] = w[i] - lr * m_hat / (sqrt(v_hat) + eps)
+        }
+        print("step ")
+        print(step)
+        print("\n")
+        print_vec("  w=", w)
+        print_vec("  m=", m)
+        print_vec("  v=", v)
+    }
+
+    nil
+}
