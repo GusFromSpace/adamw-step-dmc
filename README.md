@@ -5,8 +5,18 @@ A [demoniC](https://github.com/GusFromSpace/demoniC) port of
 
 ## Files
 
-- `adamw_step.dmc`
-- `adamw_step.py`
+- `adamw_step.dmc` — the demoniC port
+- `adamw_step.py` — Python reference (the same algorithm, for verification)
+
+## Verification
+
+The port is checked out-of-band so the `.dmc` stays a pure translation. `verify/run.sh`
+runs `adamw_step.py` and the `.dmc` on the same fixed inputs and confirms every
+emitted number agrees (rtol 1e-5):
+
+```
+DMC=/path/to/dmc verify/run.sh
+```
 
 ## License & attribution
 
